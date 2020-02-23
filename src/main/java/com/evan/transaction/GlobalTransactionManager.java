@@ -13,15 +13,16 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GlobalTransactionManager {
 
     public static final String KEY_GROUP_ID = "GROUP_ID";
     private static ThreadLocal<String> groupIdLocal = new ThreadLocal<>();
-    private static Map<String, Stack<BranchRecord>> transactionLogMap = new HashMap<>();
-    private static Map<String, List<RollbackRecord>> rollbackMap = new HashMap<>();
-    private static Map<String, Connection> localTransactionMap = new HashMap<>();
-//    private static Map<String, String> tableLockMap = new HashMap<>();
+    private static Map<String, Stack<BranchRecord>> transactionLogMap = new ConcurrentHashMap<>();
+    private static Map<String, List<RollbackRecord>> rollbackMap = new ConcurrentHashMap<>();
+    private static Map<String, Connection> localTransactionMap = new ConcurrentHashMap<>();
+//    private static Map<String, String> tableLockMap = new ConcurrentHashMap<>();
 
     public static String masterBegin(DataSourceTransactionManager transactionManager) throws GlobalTransactionException {
         if (getGroupId() == null) {
